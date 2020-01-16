@@ -7,6 +7,7 @@ from pytesseract import image_to_string
 import RPi.GPIO as GPIO
 import time
 import cv2
+import gtts
 
 GPIO.setmode(GPIO.BOARD)
 
@@ -17,14 +18,14 @@ while True:
     cv2.imshow('ved',frame)
     input_state = GPIO.input(36)
     if cv2.waitKey(1) & input_state == False:
-        cv2.imwrite('/home/pi/BLIND READER/generated/capturedimage.jpg',frame)
+        cv2.imwrite('LOCATION TO BE SAVED TO',frame)
         break
 cap.release()
 cv2.destroyAllWindows()
 
 
-from text_region_detection import cropimage
-capturedimage1=cv2.imread('CAPTURED IMAGE')
+from text_region_detection import cropimage#importing another program for cropping image 
+capturedimage1=cv2.imread('LOCATION OF CAPTURED IMAGE')
 cropimage(capturedimage1)
 graytext=cv2.cvtColor(capturedimage1,cv2.COLOR_BGR2GRAY)
 cv2.imwrite('LOCATION TO BE SAVED TO',graytext)
@@ -53,24 +54,17 @@ for r,theta in lines[0]:
     x2 = int(x0 - 1000*(-b))
     y2 = int(y0 - 1000*(-b))
     capt=cv2.line(capturedimage1,(x1,y1), (x2,y2), (255,255,255),2)
-cv2.imwrite('linesDetected.jpg',capt)
-from pytesseract import image_to_string
-from PIL import Image
+cv2.imwrite('LOCATION TO BE SAVED TO',capt)
 img =Image.open('LOCATION OF THRESHOLD IMAGE')
 n=image_to_string(img)
-
 text_file = open("texts.txt","w+")
 text_file.write(n)
 text_file.close()
-
-
-import gtts
-import os
 blabla = ("my voice")
 myfile = open("texts.txt", "rt")
 contents = myfile.read()         
 myfile.close()                       
 tts = gtts.gTTS(text=contents, lang='en')
 tts.save("rec.mp3")
-os.system('mpg321 rec.mp3 &')
+os.system('mpg321 rec.mp3 &')#THIS PLAYS AUDIO
 
